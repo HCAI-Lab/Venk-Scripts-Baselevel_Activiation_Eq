@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Log Streaming</title>
+
+<!--     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+        }
+        #keyboard-image {
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #ddd;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+/*        #log-container {
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f4f4f4;
+            overflow-y: auto;
+            resize: both;
+            min-width: 300px;
+            min-height: 200px;
+            max-height: 90vh;
+            text-align: left;
+        }*/
+        #log-container {
+            flex-grow: 1;
+            height: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f4f4f4;
+            overflow-y: auto;
+            resize: both;
+            min-width: 300px;
+            min-height: 200px;
+            max-height: 90vh;
+            text-align: left;
+        }
+        #current-input {
+            font-weight: bold;
+            color: blue;
+            margin-top: 10px;
+        }
+    </style> -->
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center; /* Center content */
+            gap: 10px;
+            padding: 20px;
+        }
+        #keyboard-image {
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid #ddd;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        #log-container {
+            width: 100%;
+/*            max-width: 600px;*/
+            height: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f4f4f4;
+            overflow-y: auto;
+            resize: both;
+            min-width: 300px;
+            min-height: 200px;
+            max-height: 90vh;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
+        #logs {
+            flex-grow: 1;
+        }
+        #current-input {
+            font-weight: bold;
+            color: blue;
+            margin-top: 10px;
+        }
+    </style>
+
+
+</head>
+<body>
+    <h1>Live Log Streaming</h1>
+    <div class="container">
+        <img id="keyboard-image" src="{{ url_for('static', filename='keyboard.png') }}" alt="Keyboard Controls">
+        <div id="log-container">
+            <div id="logs"></div>
+            <p id="current-input"></p>
+        </div>
+    </div>
+
+<!--     <script>
+        const eventSource = new EventSource('/logs');
+
+        eventSource.onmessage = function(event) {
+            const currentInput = document.getElementById('current-input');
+            const logsContainer = document.getElementById('logs');
+
+            if (event.data.startsWith("UPDATE_INDEX::")) {
+                let inputValue = event.data.replace("UPDATE_INDEX::", "");
+
+                if (inputValue === "CLEAR") {
+                    currentInput.innerText = "";
+                } else if (inputValue.startsWith("!!! WARNING")) {
+                    currentInput.innerHTML = `<span style="color:red;">${inputValue}</span>`;
+                } else {
+                    currentInput.innerText = "Current index: " + inputValue;
+                }
+            } else {
+                logsContainer.innerHTML += `<p>${event.data}</p>`;
+            }
+
+            const logContainer = document.getElementById('log-container');
+            setTimeout(() => {
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }, 100);
+        };
+
+        eventSource.onerror = function(event) {
+            console.error("EventSource failed:", event);
+            eventSource.close();
+        };
+    </script> -->
+
+<!--     <script>
+        const eventSource = new EventSource('/logs');
+
+        eventSource.onmessage = function(event) {
+            const currentInput = document.getElementById('current-input');
+            const logsContainer = document.getElementById('logs');
+
+            if (event.data === "CLEAR_LOGS") {
+                // Clear previous logs when a new action starts
+                logsContainer.innerHTML = "";
+            } else if (event.data.startsWith("UPDATE_INDEX::")) {
+                let inputValue = event.data.replace("UPDATE_INDEX::", "");
+
+                if (inputValue === "CLEAR") {
+                    currentInput.innerText = "";
+                } else if (inputValue.startsWith("!!! WARNING")) {
+                    currentInput.innerHTML = `<span style="color:red;">${inputValue}</span>`;
+                } else {
+                    currentInput.innerText = "Current index: " + inputValue;
+                }
+            } else {
+                logsContainer.innerHTML += `<p>${event.data}</p>`;
+            }
+
+            const logContainer = document.getElementById('log-container');
+            setTimeout(() => {
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }, 100);
+        };
+
+        eventSource.onerror = function(event) {
+            console.error("EventSource failed:", event);
+            eventSource.close();
+        };
+    </script> -->
+
+    <script>
+        const eventSource = new EventSource('/logs');
+
+        eventSource.onmessage = function(event) {
+            const currentInput = document.getElementById('current-input');
+            const logsContainer = document.getElementById('logs');
+
+            if (event.data === "CLEAR_LOGS") {
+                // Clear previous logs when a new action starts
+                logsContainer.innerHTML = "";
+            } else if (event.data === "UPDATE_INDEX::CLEAR") {
+                // Clear current index input when ESC is pressed
+                currentInput.innerText = "";
+            } else if (event.data.startsWith("UPDATE_INDEX::")) {
+                let inputValue = event.data.replace("UPDATE_INDEX::", "");
+
+                if (inputValue === "CLEAR") {
+                    currentInput.innerText = "";
+                } else if (inputValue.startsWith("!!! WARNING")) {
+                    currentInput.innerHTML = `<span style="color:red;">${inputValue}</span>`;
+                } else {
+                    currentInput.innerText = "Current index: " + inputValue;
+                }
+            } else {
+                logsContainer.innerHTML += `<p>${event.data}</p>`;
+            }
+
+            const logContainer = document.getElementById('log-container');
+            setTimeout(() => {
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }, 100);
+        };
+
+        eventSource.onerror = function(event) {
+            console.error("EventSource failed:", event);
+            eventSource.close();
+        };
+    </script>
+
+
+
+</body>
+</html>
+
+
+
